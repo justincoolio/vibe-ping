@@ -34,6 +34,8 @@ Planned next:
 apps/
   watcher/   Electron desktop watcher
   backend/   Future API + notification service
+config/
+  tsconfig.base.json   Shared TypeScript base config
 packages/
   shared/    Shared types and constants
 ```
