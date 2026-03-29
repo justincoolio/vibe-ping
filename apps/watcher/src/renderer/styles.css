@@ -84,7 +84,14 @@ input {
   margin-bottom: 12px;
 }
 
-.hero__topbar {
+.hero__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 16px;
+}
+
+.hero__identity {
   display: flex;
   justify-content: flex-end;
 }
@@ -94,13 +101,13 @@ input {
   min-width: 0;
   max-width: 190px;
   border-radius: 999px;
-  padding: 0.48rem 0.78rem;
+  padding: 0.52rem 0.82rem;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(124, 224, 195, 0.08);
   color: var(--text);
   font-size: 0.76rem;
   font-weight: 700;
-  text-align: right;
+  text-align: center;
 }
 
 .username-chip {
@@ -139,7 +146,7 @@ h2 {
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 1.8rem;
   line-height: 0.95;
 }
 
@@ -148,7 +155,6 @@ h2 {
 }
 
 .hero-copy,
-.status-card p,
 .timeout-summary,
 .activity-item__detail,
 .footer,
@@ -162,38 +168,11 @@ h2 {
   line-height: 1.45;
 }
 
-.status-card,
 .panel {
   backdrop-filter: blur(18px);
   background: var(--bg-elevated);
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
-}
-
-.status-card {
-  padding: 14px;
-  border-radius: 18px;
-}
-
-.status-card__label {
-  display: inline-block;
-  margin-bottom: 8px;
-  color: var(--accent);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.status-card strong {
-  display: block;
-  font-size: 1rem;
-}
-
-.status-card p {
-  margin: 6px 0 0;
-  font-size: 0.82rem;
-  line-height: 1.45;
 }
 
 .dashboard {

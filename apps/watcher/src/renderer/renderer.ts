@@ -15,8 +15,6 @@ function requireElement<T extends Element>(selector: string): T {
   return element;
 }
 
-const statusLabel = requireElement<HTMLElement>("#status-label");
-const statusDetail = requireElement<HTMLElement>("#status-detail");
 const folderList = requireElement<HTMLElement>("#folder-list");
 const addFolderButton = requireElement<HTMLButtonElement>("#add-folder-button");
 const removeFolderButton = requireElement<HTMLButtonElement>("#remove-folder-button");
@@ -28,17 +26,15 @@ const webhookInput = requireElement<HTMLInputElement>("#webhook-input");
 const webhookValidationMessage = requireElement<HTMLElement>("#webhook-validation-message");
 const desktopApi = window.vibePingDesktop;
 
-let folders = [...initialFolders];
-let selectedFolderId = folders[0]?.id ?? null;
 let activityItems: ActivityItem[] = [...recentActivity];
 let username = readStoredValue("vibeping.username", "anonomous0123");
 let webhookUrl = readStoredValue("vibeping.discordWebhook", "");
 const timeoutMinutes = Number(
   readStoredValue("vibeping.timeoutMinutes", String(initialStatus.timeoutMinutes))
 );
+let folders = readStoredFolders();
+let selectedFolderId = readSelectedFolderId(folders);
 
-statusLabel.textContent = initialStatus.label;
-statusDetail.textContent = initialStatus.detail;
 usernameInput.value = username;
 usernameDisplay.textContent = `@${username}`;
 webhookInput.value = webhookUrl;
@@ -51,9 +47,67 @@ function writeStoredValue(key: string, value: string): void {
   window.localStorage.setItem(key, value);
 }
 
+function readStoredFolders(): FolderItem[] {
+  const rawValue = window.localStorage.getItem("vibeping.folders");
+
+  if (!rawValue) {
+    return [...initialFolders];
+  }
+
+  try {
+    const parsed = JSON.parse(rawValue) as string[];
+
+    if (!Array.isArray(parsed)) {
+      return [...initialFolders];
+    }
+
+    return parsed.map((folderPath) => ({
+      id: createFolderId(folderPath),
+      label: folderPath,
+      status: "Watching"
+    }));
+  } catch {
+    return [...initialFolders];
+  }
+}
+
+function readSelectedFolderId(currentFolders: FolderItem[]): string | null {
+  const storedPath = window.localStorage.getItem("vibeping.selectedFolderPath");
+
+  if (!storedPath) {
+    return currentFolders[0]?.id ?? null;
+  }
+
+  const matchingFolder = currentFolders.find((folder) => folder.label === storedPath);
+
+  return matchingFolder?.id ?? currentFolders[0]?.id ?? null;
+}
+
+function createFolderId(folderPath: string): string {
+  return `folder-${folderPath}`;
+}
+
+function persistFolders(): void {
+  writeStoredValue(
+    "vibeping.folders",
+    JSON.stringify(folders.map((folder) => folder.label))
+  );
+}
+
+function persistSelectedFolder(): void {
+  const selectedFolder = folders.find((folder) => folder.id === selectedFolderId);
+
+  if (!selectedFolder) {
+    window.localStorage.removeItem("vibeping.selectedFolderPath");
+    return;
+  }
+
+  writeStoredValue("vibeping.selectedFolderPath", selectedFolder.label);
+}
+
 function setStatus(label: string, detail: string): void {
-  statusLabel.textContent = label;
-  statusDetail.textContent = detail;
+  document.title = label === initialStatus.label ? "VibePing" : `VibePing - ${label}`;
+  console.info("[VibePing]", label, detail);
 }
 
 function validateDiscordWebhookUrl(value: string): { valid: boolean; message: string } {
@@ -137,6 +191,7 @@ function renderFolders(): void {
 
     button.addEventListener("click", () => {
       selectedFolderId = folder.id;
+      persistSelectedFolder();
       renderFolders();
     });
 
@@ -292,7 +347,7 @@ async function addSelectedFolders(): Promise<void> {
   const nextFolders = selectedPaths
     .filter((selectedPath) => !existingPaths.has(selectedPath))
     .map<FolderItem>((selectedPath) => ({
-      id: `folder-${selectedPath}-${Date.now()}`,
+      id: createFolderId(selectedPath),
       label: selectedPath,
       status: "Watching"
     }));
@@ -304,6 +359,8 @@ async function addSelectedFolders(): Promise<void> {
 
   folders = [...folders, ...nextFolders];
   selectedFolderId = nextFolders.at(-1)?.id ?? selectedFolderId;
+  persistFolders();
+  persistSelectedFolder();
   setStatus("Folders selected", `${nextFolders.length} folder${nextFolders.length === 1 ? "" : "s"} added to the watch list.`);
   await refreshActivity();
 }
@@ -315,6 +372,8 @@ function removeSelectedFolder(): void {
 
   folders = folders.filter((folder) => folder.id !== selectedFolderId);
   selectedFolderId = folders[0]?.id ?? null;
+  persistFolders();
+  persistSelectedFolder();
   void refreshActivity();
 }
 
