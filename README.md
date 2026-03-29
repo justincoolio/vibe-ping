@@ -1,59 +1,40 @@
-# VibePing
+# Vibe-Ping
 
-VibePing is a desktop-first presence tool for developers.
+Vibe-Ping is a small desktop app that posts your coding presence to Discord.
 
-Point it at a project folder, let it watch for recent file activity, and it can quietly post to Discord when you are actively coding.
+Point it at one or more project folders, let it run in the background, and it will quietly tell your server when you are actively coding or when you're offline.
 
-The goal is simple: lightweight developer presence without turning your workflow into a giant dashboard.
+This repo is aimed at developers first: clone it, run it locally, connect a Discord webhook, and start experimenting.
 
-## Version 1.0
+## Why It Exists
 
-VibePing v1 includes:
+Most presence tools are built around chat apps, game launchers, or giant collaboration suites.
 
-- a compact Electron desktop app
-- local folder selection for watched projects
-- recent-activity scanning based on file changes
-- simple live status in the UI
-- Discord webhook support
-- backend delivery flow for presence updates
-- local terminal logging for testing and debugging
+Vibe-Ping is intentionally narrower:
 
-Current Discord behavior is intentionally quiet:
+- desktop-first
+- Discord-focused
+- low-friction
+- background-friendly
+- built for developers who just want lightweight “I’m coding right now” signals
 
-- VibePing sends when a project becomes active
-- when a watched project goes idle after 15 minutes, Discord receives `<username> offline.`
-- the desktop app notifies locally when a watched project has been idle for 15 minutes
-- it does not spam repeated offline notifications
-- the watcher can still show local state changes in the app
+## What It Does
 
-## How It Works
+- watches local project folders for recent file activity
+- sends Discord webhook updates when coding starts
+- marks you offline after an idle threshold
+- keeps running after the window closes
+- lives in the tray with explicit reopen and quit behavior
+- supports launch at login and start hidden
+- includes an in-app Discord connection test
 
-1. You add a folder in the desktop watcher.
-2. VibePing scans for recent file activity in that folder.
-3. If the folder is active, the watcher marks it as `Currently vibe coding`.
-4. The watcher sends a presence update to the backend.
-5. The backend forwards that update to Discord through your webhook.
+## Quick Start
 
-## Monorepo Layout
+### Requirements
 
-```text
-apps/
-  watcher/   Electron desktop app for folder monitoring
-  backend/   Presence update receiver + Discord delivery
-packages/
-  shared/    Shared types and contracts
-config/
-  tsconfig.base.json
-```
-
-## Tech Stack
-
-- TypeScript
 - Node.js
-- `pnpm` workspaces
-- Electron
-
-## Getting Started
+- `pnpm`
+- macOS, Windows, or Linux with Electron support
 
 ### Install
 
@@ -61,61 +42,89 @@ config/
 pnpm install
 ```
 
-### Run Everything For Testing
+### Run
 
 ```bash
 pnpm test:app
 ```
 
-That starts the backend and launches the watcher app together.
+That launches the Vibe-Ping app.
 
-### Run Pieces Separately
+### Inside The App
 
-Backend:
+1. Add your Discord webhook.
+2. Click `Test connection`.
+3. Add a folder to watch.
+4. Start coding.
+
+## Development Commands
+
+Run the app:
 
 ```bash
-pnpm test:backend
+pnpm test:app
 ```
 
-Watcher:
+Run the watcher directly:
 
 ```bash
 pnpm test:watcher
 ```
 
-## Build And Typecheck
+Typecheck everything:
 
 ```bash
 pnpm typecheck
+```
+
+Build everything:
+
+```bash
 pnpm build
 ```
 
-## Discord Setup
+## How It Works
 
-Inside the watcher app:
+Vibe-Ping scans watched folders for recent file changes.
 
-1. Paste a Discord webhook URL into the Discord section.
-2. Add a folder to watch.
-3. Start working in that folder.
+If activity is fresh, it reports `Currently vibe coding`.
 
-VibePing validates the webhook format locally before using it.
+If activity stays quiet past the configured threshold, it reports `Offline`.
 
-## What The Watcher Does Today
+The monitoring loop lives in Electron’s main process, so the app can keep running even after the window is closed.
 
-- tracks selected folders locally
-- scans for recent file updates
-- shows recent activity in the app
-- updates status based on recent activity
-- sends presence updates through the backend
+## Current Scope
+
+This is a GitHub-first developer release, not a polished packaged consumer app yet.
+
+What is solid today:
+
+- local folder monitoring
+- Discord webhook delivery
+- background app behavior
+- tray-based lifecycle
+- editable idle threshold
+- launch-at-login controls
+
+What is still intentionally simple:
+
+- file activity uses scan-based detection, not native OS file watching
+- distribution is still repo-first
+
+## Repo Layout
+
+```text
+apps/
+  watcher/   Electron app for monitoring + Discord delivery
+  backend/   Legacy prototype code
+packages/
+  shared/    Shared types
+docs/
+  v1-github-release-checklist.md
+```
 
 ## Notes
 
-- The watcher currently uses scan-based activity detection, not true OS-level file watching.
-- Discord delivery uses webhooks, so keep those URLs private.
-- The app is intentionally small, focused, and utility-shaped.
-
-## Why VibePing?
-
-Because sometimes the right status message is just:
-
-`someone is vibe coding right now`
+- Closing the window can keep Vibe-Ping running in the background.
+- Quitting is handled explicitly from the tray menu.
+- Discord webhooks are sensitive credentials. Keep them private.

@@ -8,7 +8,8 @@ contextBridge.exposeInMainWorld("vibePingDesktop", {
     node: process.versions.node
   },
   selectFolders: () => ipcRenderer.invoke("watcher:select-folders"),
-  setFolders: (folders) => ipcRenderer.invoke("watcher:set-folders", folders),
-  getActivity: (timeoutMinutes, username, webhookUrl) =>
-    ipcRenderer.invoke("watcher:get-activity", timeoutMinutes, username, webhookUrl)
+  getConfig: () => ipcRenderer.invoke("watcher:get-config"),
+  updateConfig: (nextConfig) => ipcRenderer.invoke("watcher:update-config", nextConfig),
+  testDiscordConnection: () => ipcRenderer.invoke("watcher:test-discord-connection"),
+  getState: () => ipcRenderer.invoke("watcher:get-state")
 });

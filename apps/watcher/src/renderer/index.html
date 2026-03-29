@@ -61,17 +61,17 @@
           <ul id="folder-list" class="folder-list" aria-label="Watched folders"></ul>
         </section>
 
-        <section class="panel panel--settings">
+        <section class="panel panel--discord">
           <div class="panel__header panel__header--stacked">
             <div>
-              <p class="panel__eyebrow">Discord</p>
-              <h2>Connections</h2>
+              <p class="panel__eyebrow">Discord webhook connection</p>
+              <h2>Discord connection</h2>
             </div>
           </div>
 
           <div id="webhook-editor" class="discord-editor">
             <p class="discord-step__copy">
-              Paste the Discord webhook URL to send coding updates into your server.
+              This connection powers the core product experience. Add your Discord webhook so VibePing can post coding status updates to your server.
             </p>
 
             <label class="timeout-control" for="webhook-input">
@@ -84,7 +84,77 @@
               />
             </label>
 
+            <div class="discord-actions">
+              <button id="test-webhook-button" class="button button--primary" type="button">
+                Test connection
+              </button>
+            </div>
+
             <p id="webhook-validation-message" class="webhook-validation-message"></p>
+
+            <div class="discord-status-card" aria-live="polite">
+              <p id="discord-status-message" class="discord-status-card__message">
+                Discord webhook not configured yet.
+              </p>
+              <p id="discord-status-meta" class="discord-status-card__meta">
+                Add a webhook URL to test your connection.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel panel--settings">
+          <div class="panel__header panel__header--stacked">
+            <div>
+              <p class="panel__eyebrow">App behavior</p>
+              <h2>Background and timing</h2>
+            </div>
+          </div>
+
+          <div class="settings-stack">
+            <label class="toggle-card" for="keep-running-checkbox">
+              <span class="toggle-card__copy">
+                <strong>Keep running after closing the window</strong>
+                <span>Recommended. VibePing keeps sending updates until you quit from the tray.</span>
+              </span>
+              <input id="keep-running-checkbox" type="checkbox" />
+            </label>
+
+            <label class="toggle-card" for="open-at-login-checkbox">
+              <span class="toggle-card__copy">
+                <strong>Launch when I log in</strong>
+                <span>Start VibePing automatically when your computer session begins.</span>
+              </span>
+              <input id="open-at-login-checkbox" type="checkbox" />
+            </label>
+
+            <label class="toggle-card" for="start-hidden-checkbox">
+              <span class="toggle-card__copy">
+                <strong>Start hidden in the background</strong>
+                <span>When launched at login, stay in the tray instead of opening the window.</span>
+              </span>
+              <input id="start-hidden-checkbox" type="checkbox" />
+            </label>
+
+            <label class="settings-field" for="timeout-input">
+              <span class="settings-field__label">Idle/offline threshold</span>
+              <div class="settings-field__control">
+                <input
+                  id="timeout-input"
+                  type="number"
+                  min="5"
+                  max="240"
+                  step="5"
+                  value="30"
+                />
+                <span class="settings-field__suffix">minutes</span>
+              </div>
+              <span class="settings-field__hint">Choose how long VibePing waits before switching you to offline.</span>
+            </label>
+
+            <div class="settings-note">
+              Current threshold: <strong id="timeout-value">30 min</strong>
+            </div>
           </div>
         </section>
 

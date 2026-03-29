@@ -369,19 +369,131 @@ h2 {
 .discord-editor {
   display: grid;
   gap: 10px;
-}
-
-.discord-editor {
-  padding: 12px;
+  padding: 14px;
   border: 1px solid rgba(137, 198, 189, 0.16);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.02);
+  background:
+    linear-gradient(180deg, rgba(124, 224, 195, 0.08), rgba(255, 255, 255, 0.02)),
+    rgba(255, 255, 255, 0.02);
+}
+
+.settings-stack {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.toggle-card,
+.settings-note,
+.settings-field {
+  border: 1px solid rgba(137, 198, 189, 0.16);
+  background: var(--bg-panel);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.toggle-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggle-card input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  flex: 0 0 auto;
+}
+
+.toggle-card__copy {
+  display: grid;
+  gap: 4px;
+}
+
+.toggle-card__copy span,
+.settings-note {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.settings-field {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-field__label {
+  font-weight: 700;
+}
+
+.settings-field__control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-field__control input {
+  width: 100px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(124, 224, 195, 0.08);
+  color: var(--text);
+  padding: 0.6rem 0.75rem;
+  outline: none;
+}
+
+.settings-field__control input:focus {
+  border-color: var(--line-strong);
+  box-shadow: 0 0 0 1px rgba(223, 247, 106, 0.22);
+}
+
+.settings-field__suffix,
+.settings-field__hint {
+  color: var(--muted);
 }
 
 .discord-step__copy {
   margin: 0;
-  color: var(--muted);
+  color: var(--text);
   font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.discord-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.discord-status-card {
+  border: 1px solid rgba(137, 198, 189, 0.16);
+  border-radius: 14px;
+  background: rgba(7, 16, 23, 0.45);
+  padding: 12px;
+}
+
+.discord-status-card__message,
+.discord-status-card__meta {
+  margin: 0;
+}
+
+.discord-status-card__message {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.discord-status-card__message.is-success {
+  color: var(--accent-strong);
+}
+
+.discord-status-card__message.is-error {
+  color: var(--danger);
+}
+
+.discord-status-card__meta {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.76rem;
   line-height: 1.45;
 }
 

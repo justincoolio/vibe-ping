@@ -42,11 +42,110 @@ type FileScanResult = {
 
 const SKIPPED_DIRECTORIES = new Set([
   ".git",
+  ".DerivedData",
   "node_modules",
   "dist",
   "build",
   ".turbo",
-  ".cache"
+  ".cache",
+  ".idea",
+  ".vscode",
+  ".vs",
+  ".history",
+  ".svn",
+  ".hg",
+  "$RECYCLE.BIN",
+  ".Spotlight-V100",
+  ".Trashes"
+]);
+
+const SKIPPED_FILE_NAMES = new Set([
+  ".DS_Store",
+  "Thumbs.db",
+  "Desktop.ini",
+  "ehthumbs.db",
+  "Icon\r"
+]);
+
+const SKIPPED_FILE_EXTENSIONS = new Set([
+  ".xcuserstate",
+  ".tmp",
+  ".temp",
+  ".swp",
+  ".swo",
+  ".log",
+  ".lock"
+]);
+
+const TRACKED_FILE_EXTENSIONS = new Set([
+  ".ts",
+  ".tsx",
+  ".mts",
+  ".cts",
+  ".js",
+  ".jsx",
+  ".mjs",
+  ".cjs",
+  ".py",
+  ".pyw",
+  ".swift",
+  ".html",
+  ".htm",
+  ".css",
+  ".scss",
+  ".sass",
+  ".less",
+  ".java",
+  ".go",
+  ".rs",
+  ".rb",
+  ".php",
+  ".kt",
+  ".kts",
+  ".cs",
+  ".json",
+  ".plist",
+  ".yaml",
+  ".yml",
+  ".toml",
+  ".md",
+  ".mdx",
+  ".sql",
+  ".sh",
+  ".zsh",
+  ".bash",
+  ".fish",
+  ".ps1",
+  ".bat",
+  ".cmd",
+  ".env",
+  ".conf",
+  ".config",
+  ".ini",
+  ".xml",
+  ".pbxproj",
+  ".xcscheme",
+  ".xcworkspacedata",
+  ".entitlements"
+]);
+
+const TRACKED_FILE_NAMES = new Set([
+  "package.json",
+  "package-lock.json",
+  "pnpm-lock.yaml",
+  "pnpm-workspace.yaml",
+  "tsconfig.json",
+  "dockerfile",
+  "makefile",
+  "gemfile",
+  "podfile",
+  "cartfile",
+  "brewfile",
+  ".env",
+  ".env.local",
+  ".env.development",
+  ".env.production",
+  ".env.test"
 ]);
 
 const LANGUAGE_DEFINITIONS: LanguageDefinition[] = [
@@ -200,6 +299,10 @@ async function collectRecentFiles(
         continue;
       }
 
+      if (!shouldTrackFile(fullPath, entry.name)) {
+        continue;
+      }
+
       scannedEntries += 1;
 
       try {
@@ -221,6 +324,26 @@ async function collectRecentFiles(
     recentActivity: results.sort((left, right) => right.modifiedAt - left.modifiedAt).slice(0, 6),
     languageTag: selectPrimaryLanguage(languageScores)
   };
+}
+
+function shouldTrackFile(filePath: string, fileName: string): boolean {
+  if (SKIPPED_FILE_NAMES.has(fileName)) {
+    return false;
+  }
+
+  const extension = path.extname(filePath).toLowerCase();
+
+  if (SKIPPED_FILE_EXTENSIONS.has(extension)) {
+    return false;
+  }
+
+  if (filePath.split(path.sep).includes("xcuserdata")) {
+    return false;
+  }
+
+  const normalizedFileName = fileName.toLowerCase();
+
+  return TRACKED_FILE_EXTENSIONS.has(extension) || TRACKED_FILE_NAMES.has(normalizedFileName);
 }
 
 function updateLanguageScores(
