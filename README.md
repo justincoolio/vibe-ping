@@ -20,7 +20,6 @@ Join the Vibe-Ping Discord community: [discord.gg/KBzRBRXR](https://discord.gg/K
 
 ## Quick Start
 
-CHANGE TEST
 ### Requirements
 
 - Node.js 18+
