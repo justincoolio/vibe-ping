@@ -18,6 +18,7 @@ declare global {
           path: string;
           status: FolderItem["status"];
           lastActivityAt: number | null;
+          languageTag: string | null;
         }>;
         activity: Array<ActivityItem & { timestamp: number }>;
       }>;

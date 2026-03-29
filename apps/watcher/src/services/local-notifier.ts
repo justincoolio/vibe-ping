@@ -7,7 +7,13 @@ import type { WatchedFolderSnapshot } from "./activity-scanner.js";
 let notifierLogPath: string | null = null;
 let terminalOpened = false;
 
-export async function initializeLocalNotifier(): Promise<void> {
+type LocalNotifierOptions = {
+  openTerminal?: boolean;
+};
+
+export async function initializeLocalNotifier(
+  options: LocalNotifierOptions = {}
+): Promise<void> {
   const logsDir = path.join(tmpdir(), "vibeping");
   notifierLogPath = path.join(logsDir, "presence.log");
 
@@ -23,7 +29,9 @@ export async function initializeLocalNotifier(): Promise<void> {
     "utf8"
   );
 
-  await openNotifierTerminal();
+  if (options.openTerminal) {
+    await openNotifierTerminal();
+  }
 }
 
 export async function appendPresenceEvent(message: string): Promise<void> {

@@ -2,6 +2,7 @@ export type FolderItem = {
   id: string;
   label: string;
   status: "Watching" | "Idle" | "Needs review";
+  languageTag: string | null;
 };
 
 export type ActivityItem = {

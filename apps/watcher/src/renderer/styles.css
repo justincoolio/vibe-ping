@@ -327,6 +327,16 @@ h2 {
   color: var(--muted);
 }
 
+.folder-item__language {
+  border-radius: 999px;
+  padding: 0.35rem 0.55rem;
+  background: rgba(124, 224, 195, 0.08);
+  border: 1px solid rgba(124, 224, 195, 0.18);
+  color: #a7efe2;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
 .timeout-control {
   display: grid;
   gap: 8px;

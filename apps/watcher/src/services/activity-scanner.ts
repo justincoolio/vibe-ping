@@ -7,6 +7,7 @@ export type WatchedFolderSnapshot = {
   path: string;
   status: FolderStatus;
   lastActivityAt: number | null;
+  languageTag: string | null;
 };
 
 export type RecentActivityEntry = {
@@ -28,6 +29,17 @@ type FileActivity = {
   modifiedAt: number;
 };
 
+type LanguageDefinition = {
+  tag: string;
+  extensions: string[];
+  filenames?: string[];
+};
+
+type FileScanResult = {
+  recentActivity: FileActivity[];
+  languageTag: string | null;
+};
+
 const SKIPPED_DIRECTORIES = new Set([
   ".git",
   "node_modules",
@@ -36,6 +48,63 @@ const SKIPPED_DIRECTORIES = new Set([
   ".turbo",
   ".cache"
 ]);
+
+const LANGUAGE_DEFINITIONS: LanguageDefinition[] = [
+  {
+    tag: "#typescript",
+    extensions: [".ts", ".tsx", ".mts", ".cts"],
+    filenames: ["tsconfig.json"]
+  },
+  {
+    tag: "#javascript",
+    extensions: [".js", ".jsx", ".mjs", ".cjs"],
+    filenames: ["package.json"]
+  },
+  {
+    tag: "#python",
+    extensions: [".py", ".pyw"]
+  },
+  {
+    tag: "#swift",
+    extensions: [".swift"]
+  },
+  {
+    tag: "#html",
+    extensions: [".html", ".htm"]
+  },
+  {
+    tag: "#css",
+    extensions: [".css", ".scss", ".sass", ".less"]
+  },
+  {
+    tag: "#java",
+    extensions: [".java"]
+  },
+  {
+    tag: "#go",
+    extensions: [".go"]
+  },
+  {
+    tag: "#rust",
+    extensions: [".rs"]
+  },
+  {
+    tag: "#ruby",
+    extensions: [".rb"]
+  },
+  {
+    tag: "#php",
+    extensions: [".php"]
+  },
+  {
+    tag: "#kotlin",
+    extensions: [".kt", ".kts"]
+  },
+  {
+    tag: "#csharp",
+    extensions: [".cs"]
+  }
+];
 
 export async function scanWatchedFolders(
   watchedFolders: string[],
@@ -46,17 +115,17 @@ export async function scanWatchedFolders(
 }> {
   const allActivity = await Promise.all(
     watchedFolders.map(async (folderPath) => {
-      const activity = await collectRecentFiles(folderPath, {
+      const scanResult = await collectRecentFiles(folderPath, {
         maxEntries: options.maxEntries ?? 40,
         maxDepth: options.maxDepth ?? 4
       });
 
-      const latest = activity[0]?.modifiedAt ?? null;
+      const latest = scanResult.recentActivity[0]?.modifiedAt ?? null;
 
       return {
         folderPath,
-        activity,
-        latest
+        latest,
+        ...scanResult
       };
     })
   );
@@ -67,12 +136,13 @@ export async function scanWatchedFolders(
   const folders = allActivity.map<WatchedFolderSnapshot>((folder) => ({
     path: folder.folderPath,
     lastActivityAt: folder.latest,
-    status: getFolderStatus(folder.latest, now, timeoutMs)
+    status: getFolderStatus(folder.latest, now, timeoutMs),
+    languageTag: folder.languageTag
   }));
 
   const activity = allActivity
     .flatMap((folder) =>
-      folder.activity.map<RecentActivityEntry>((entry) => ({
+      folder.recentActivity.map<RecentActivityEntry>((entry) => ({
         id: `${entry.filePath}-${entry.modifiedAt}`,
         title: path.basename(entry.filePath),
         detail: `${path.basename(folder.folderPath)} • ${entry.filePath}`,
@@ -92,9 +162,10 @@ async function collectRecentFiles(
     maxEntries: number;
     maxDepth: number;
   }
-): Promise<FileActivity[]> {
+): Promise<FileScanResult> {
   const results: FileActivity[] = [];
   let scannedEntries = 0;
+  const languageScores = new Map<string, number>();
 
   async function walk(currentPath: string, depth: number): Promise<void> {
     if (depth > options.maxDepth || scannedEntries >= options.maxEntries) {
@@ -133,6 +204,7 @@ async function collectRecentFiles(
 
       try {
         const fileStat = await stat(fullPath);
+        updateLanguageScores(languageScores, entry.name, fullPath);
         results.push({
           filePath: fullPath,
           modifiedAt: fileStat.mtimeMs
@@ -145,7 +217,51 @@ async function collectRecentFiles(
 
   await walk(rootPath, 0);
 
-  return results.sort((left, right) => right.modifiedAt - left.modifiedAt).slice(0, 6);
+  return {
+    recentActivity: results.sort((left, right) => right.modifiedAt - left.modifiedAt).slice(0, 6),
+    languageTag: selectPrimaryLanguage(languageScores)
+  };
+}
+
+function updateLanguageScores(
+  scores: Map<string, number>,
+  fileName: string,
+  filePath: string
+): void {
+  const extension = path.extname(filePath).toLowerCase();
+  const normalizedFileName = fileName.toLowerCase();
+
+  for (const language of LANGUAGE_DEFINITIONS) {
+    let scoreDelta = 0;
+
+    if (language.extensions.includes(extension)) {
+      scoreDelta += 1;
+    }
+
+    if (language.filenames?.includes(normalizedFileName)) {
+      scoreDelta += 2;
+    }
+
+    if (scoreDelta > 0) {
+      scores.set(language.tag, (scores.get(language.tag) ?? 0) + scoreDelta);
+    }
+  }
+}
+
+function selectPrimaryLanguage(scores: Map<string, number>): string | null {
+  let strongestTag: string | null = null;
+  let strongestScore = 0;
+
+  for (const language of LANGUAGE_DEFINITIONS) {
+    const score = scores.get(language.tag) ?? 0;
+
+    if (score > strongestScore) {
+      strongestScore = score;
+      strongestTag = language.tag;
+    }
+  }
+
+  return strongestTag;
 }
 
 function getFolderStatus(

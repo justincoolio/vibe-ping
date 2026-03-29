@@ -11,6 +11,7 @@ type PresenceUpdate = {
   folderPath: string;
   status: "Currently vibe coding" | "Offline";
   timestamp: string;
+  languageTag?: string;
   webhookUrl?: string;
 };
 
@@ -88,6 +89,7 @@ function isPresenceUpdate(value: Partial<PresenceUpdate>): value is PresenceUpda
     typeof value.projectName === "string" &&
     typeof value.folderPath === "string" &&
     (value.status === "Currently vibe coding" || value.status === "Offline") &&
+    (typeof value.languageTag === "undefined" || typeof value.languageTag === "string") &&
     (typeof value.webhookUrl === "undefined" || typeof value.webhookUrl === "string") &&
     typeof value.timestamp === "string"
   );

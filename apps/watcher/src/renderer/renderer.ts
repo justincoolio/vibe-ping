@@ -64,7 +64,8 @@ function readStoredFolders(): FolderItem[] {
     return parsed.map((folderPath) => ({
       id: createFolderId(folderPath),
       label: folderPath,
-      status: "Watching"
+      status: "Watching",
+      languageTag: null
     }));
   } catch {
     return [...initialFolders];
@@ -178,6 +179,7 @@ function renderFolders(): void {
     const badgeGroup = document.createElement("div");
     const statusBadge = document.createElement("span");
     const presenceBadge = document.createElement("span");
+    const languageBadge = document.createElement("span");
     const presenceState: PresenceState =
       folder.status === "Watching" ? "Currently vibe coding" : "Offline";
     const isActive = presenceState === "Currently vibe coding";
@@ -209,8 +211,15 @@ function renderFolders(): void {
     presenceBadge.className = `folder-item__presence ${isActive ? "is-active" : "is-offline"}`;
     presenceBadge.textContent = presenceState;
 
+    languageBadge.className = "folder-item__language";
+    languageBadge.textContent = folder.languageTag ?? "";
+
     badgeGroup.className = "folder-item__badges";
     badgeGroup.append(statusBadge, presenceBadge);
+
+    if (folder.languageTag) {
+      badgeGroup.append(languageBadge);
+    }
 
     content.append(title, pathLabel);
     button.append(indexBadge, content, badgeGroup);
@@ -267,9 +276,11 @@ async function refreshActivity(): Promise<void> {
   );
 
   const statusByPath = new Map(snapshot.folders.map((folder) => [folder.path, folder.status]));
+  const languageTagByPath = new Map(snapshot.folders.map((folder) => [folder.path, folder.languageTag]));
   folders = folders.map((folder) => ({
     ...folder,
-    status: statusByPath.get(folder.label) ?? folder.status
+    status: statusByPath.get(folder.label) ?? folder.status,
+    languageTag: languageTagByPath.get(folder.label) ?? folder.languageTag
   }));
   activityItems = snapshot.activity.map(({ timestamp: _timestamp, ...activity }) => activity);
 
@@ -349,7 +360,8 @@ async function addSelectedFolders(): Promise<void> {
     .map<FolderItem>((selectedPath) => ({
       id: createFolderId(selectedPath),
       label: selectedPath,
-      status: "Watching"
+      status: "Watching",
+      languageTag: null
     }));
 
   if (nextFolders.length === 0) {

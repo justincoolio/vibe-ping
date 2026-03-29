@@ -6,4 +6,5 @@ export type PresenceUpdate = {
   folderPath: string;
   status: PresenceState;
   timestamp: string;
+  languageTag?: string;
 };

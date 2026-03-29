@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld("vibePingDesktop", {
         path: string;
         status: "Watching" | "Idle" | "Needs review";
         lastActivityAt: number | null;
+        languageTag: string | null;
       }>;
       activity: Array<{
         id: string;

@@ -4,6 +4,7 @@ type PresenceUpdate = {
   folderPath: string;
   status: "Currently vibe coding" | "Offline";
   timestamp: string;
+  languageTag?: string;
   webhookUrl?: string;
 };
 
@@ -20,14 +21,10 @@ export async function sendDiscordPresenceUpdate(payload: PresenceUpdate): Promis
     };
   }
 
-  if (payload.status !== "Currently vibe coding") {
-    return {
-      delivered: false,
-      reason: "Only active coding notifications are sent"
-    };
-  }
-
-  const content = `${payload.username} is vibe coding ${payload.projectName}`;
+  const content =
+    payload.status === "Currently vibe coding"
+      ? `${payload.username} is vibe coding ${payload.projectName}${payload.languageTag ? `. ${payload.languageTag}` : ""}`
+      : `${payload.username} offline.`;
 
   const response = await fetch(webhookUrl, {
     method: "POST",

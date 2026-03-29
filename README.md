@@ -21,6 +21,8 @@ VibePing v1 includes:
 Current Discord behavior is intentionally quiet:
 
 - VibePing sends when a project becomes active
+- when a watched project goes idle after 15 minutes, Discord receives `<username> offline.`
+- the desktop app notifies locally when a watched project has been idle for 15 minutes
 - it does not spam repeated offline notifications
 - the watcher can still show local state changes in the app
 
