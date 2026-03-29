@@ -33,14 +33,20 @@ Vibe-Ping is intentionally narrower:
 ### Requirements
 
 - Node.js
-- `pnpm`
+- pnpm
 - macOS, Windows, or Linux with Electron support
 
 ### Install
 
+Clone the repo, then install its dependencies:
+
 ```bash
+git clone https://github.com/justincoolio/vibe-ping.git
+cd vibe-ping
 pnpm install
 ```
+
+`pnpm install` does not install Vibe-Ping system-wide. It installs the packages needed to run the app from this repository checkout.
 
 ### Run
 
@@ -48,7 +54,7 @@ pnpm install
 pnpm test:app
 ```
 
-That launches the Vibe-Ping app.
+That launches the Vibe-Ping app from your local clone.
 
 ### Inside The App
 
