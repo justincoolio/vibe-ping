@@ -22,17 +22,25 @@ Join the Vibe-Ping Discord community: [discord.gg/KBzRBRXR](https://discord.gg/K
 
 ### Requirements
 
-- Node.js
+- Node.js 18+
 - pnpm
 - macOS, Windows, or Linux with Electron support
 
 ### Install
 
-If you do not already have `pnpm`, install it first with Corepack:
+If you do not already have `pnpm`, install it first.
+
+Recommended on macOS, Windows, and Linux if your Node.js install includes `corepack`:
 
 ```bash
 corepack enable
 corepack prepare pnpm@10.6.0 --activate
+```
+
+If `corepack` is not available on your machine, use this fallback instead:
+
+```bash
+npm install -g pnpm@10.6.0
 ```
 
 Then clone the repo and install its dependencies:
