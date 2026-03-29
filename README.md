@@ -6,6 +6,8 @@ Point it at one or more project folders, let it run in the background, and it wi
 
 This repo is aimed at developers first: clone it, run it locally, connect a Discord webhook, and start experimenting.
 
+Join the Vibe-Ping Discord community: [discord.gg/KBzRBRXR](https://discord.gg/KBzRBRXR)
+
 ## What It Does
 
 - watches local project folders for recent file activity
