@@ -6,232 +6,242 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0"
     />
-    <title>VibePing</title>
+    <title>Vibe-Ping</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="app-shell">
-      <div class="app-shell__glow app-shell__glow--left"></div>
-      <div class="app-shell__glow app-shell__glow--right"></div>
-
-      <header class="hero">
-        <div class="hero__header">
-          <div>
-            <p class="eyebrow">Discord coding presence</p>
-            <h1>Vibe-Ping</h1>
-            <p class="hero-copy">
-              Notify your homies when you're vibe coding via Discord.
-            </p>
-          </div>
-
-          <div class="hero__identity">
-            <button id="username-display" class="username-chip" type="button">
-              @anonomous0123
+      <div class="app-shell__grid">
+        <aside class="hero-panel">
+          <div class="hero-panel__controls">
+            <button
+              id="theme-toggle-button"
+              class="button button--ghost"
+              type="button"
+              aria-label="Toggle light and dark mode"
+              aria-pressed="false"
+            >
+              Light mode
             </button>
-            <input
-              id="username-input"
-              class="username-input is-hidden"
-              type="text"
-              maxlength="24"
-              value="anonomous0123"
-              aria-label="Username"
-            />
-          </div>
-        </div>
-      </header>
 
-      <main class="dashboard">
-        <section class="panel panel--folders">
-          <div class="panel__header">
-            <div>
-              <p class="panel__eyebrow">Watched folders</p>
-              <h2>Folder list</h2>
-            </div>
-
-            <div class="panel__actions">
-              <button id="add-folder-button" class="button button--primary" type="button">
-                Add
+            <div class="hero-panel__identity">
+              <button id="username-display" class="username-chip" type="button">
+                @anonomous0123
               </button>
-              <button id="remove-folder-button" class="button button--secondary" type="button">
-                Remove
-              </button>
-            </div>
-          </div>
-
-          <ul id="folder-list" class="folder-list" aria-label="Watched folders"></ul>
-        </section>
-
-        <section class="panel panel--discord">
-          <div class="panel__header panel__header--stacked">
-            <div>
-              <p class="panel__eyebrow">Discord Connection</p>
-            </div>
-          </div>
-
-          <div id="webhook-editor" class="discord-editor">
-            <label class="timeout-control" for="webhook-input">
-              <span class="discord-label-row">
-                <span>Custom Webhook URL</span>
-                <button
-                  id="webhook-help-button"
-                  class="discord-help-button"
-                  type="button"
-                  aria-label="How to find your Discord webhook URL"
-                >
-                  i
-                </button>
-              </span>
               <input
-                id="webhook-input"
-                type="password"
-                placeholder="https://discord.com/api/webhooks/..."
-                autocomplete="off"
+                id="username-input"
+                class="username-input is-hidden"
+                type="text"
+                maxlength="24"
+                value="anonomous0123"
+                aria-label="Username"
               />
-            </label>
-
-            <div class="discord-actions">
-              <button id="test-webhook-button" class="button button--primary" type="button">
-                Test connection
-              </button>
-            </div>
-
-            <div class="discord-status-card" aria-live="polite">
-              <p id="discord-status-message" class="discord-status-card__message">
-                Discord delivery is not configured yet.
-              </p>
-              <p id="discord-status-meta" class="discord-status-card__meta">
-                Add a webhook URL or configure a backend server to test delivery.
-              </p>
-            </div>
-
-            <div class="discord-actions">
-              <button id="official-server-button" class="button button--secondary" type="button">
-                Connect to Official Vibe-Ping Server
-              </button>
             </div>
           </div>
 
-          <dialog id="webhook-help-dialog" class="discord-help-dialog" aria-labelledby="webhook-help-title">
-            <div class="discord-help-dialog__content">
-              <div class="discord-help-dialog__header">
-                <h3 id="webhook-help-title">Find your Discord webhook URL</h3>
-                <button
-                  id="webhook-help-close-button"
-                  class="discord-help-dialog__close"
-                  type="button"
-                  aria-label="Close webhook help"
-                >
-                  Close
+          <div class="hero-panel__content">
+            <p class="eyebrow">Vibe code status relay</p>
+            <h1>vibe-ping</h1>
+            <p class="hero-copy">notify the homies you're vibe coding</p>
+          </div>
+
+          <div class="hero-panel__footer"></div>
+        </aside>
+
+        <main class="control-wall">
+          <section class="screen screen--folders">
+            <div class="panel__header">
+              <div>
+                <p class="panel__eyebrow">Watch channels</p>
+                <h2>Folder nodes</h2>
+              </div>
+
+              <div class="panel__actions">
+                <button id="add-folder-button" class="button button--primary" type="button">
+                  Add node
+                </button>
+                <button id="remove-folder-button" class="button button--secondary" type="button">
+                  Drop node
                 </button>
               </div>
-              <ol class="discord-help-dialog__steps">
-                <li>Open Discord and go to the server and channel where you want VibePing updates to appear.</li>
-                <li>Open <strong>Edit Channel</strong>, then <strong>Integrations</strong>, then <strong>Webhooks</strong>.</li>
-                <li>Create a webhook or choose an existing one, then click <strong>Copy Webhook URL</strong>.</li>
-                <li>Paste that URL into VibePing and use <strong>Test connection</strong> when you are ready.</li>
-              </ol>
             </div>
-          </dialog>
-        </section>
 
-        <section class="panel panel--settings">
-          <div class="panel__header panel__header--stacked">
-            <div>
-              <p class="panel__eyebrow">App behavior</p>
-              <h2>Background and timing</h2>
-            </div>
-          </div>
+            <ul id="folder-list" class="folder-list" aria-label="Watched folders"></ul>
+          </section>
 
-          <div class="settings-stack">
-            <label class="toggle-card" for="keep-running-checkbox">
-              <span class="toggle-card__copy">
-                <strong>Keep running after closing the window</strong>
-                <span>Recommended. VibePing keeps sending updates until you quit from the tray.</span>
-              </span>
-              <input id="keep-running-checkbox" type="checkbox" />
-            </label>
-
-            <label class="toggle-card" for="open-at-login-checkbox">
-              <span class="toggle-card__copy">
-                <strong>Launch when I log in</strong>
-                <span>Start VibePing automatically when your computer session begins.</span>
-              </span>
-              <input id="open-at-login-checkbox" type="checkbox" />
-            </label>
-
-            <label class="toggle-card" for="start-hidden-checkbox">
-              <span class="toggle-card__copy">
-                <strong>Start hidden in the background</strong>
-                <span>When launched at login, stay in the tray instead of opening the window.</span>
-              </span>
-              <input id="start-hidden-checkbox" type="checkbox" />
-            </label>
-
-            <label class="settings-field" for="timeout-input">
-              <span class="settings-field__label">Idle/offline threshold</span>
-              <div class="settings-field__control">
-                <input
-                  id="timeout-input"
-                  type="number"
-                  min="5"
-                  max="240"
-                  step="5"
-                  value="30"
-                />
-                <span class="settings-field__suffix">minutes</span>
+          <section class="screen screen--discord">
+            <div class="panel__header panel__header--stacked">
+              <div>
+                <p class="panel__eyebrow">Discord bridge</p>
+                <h2>Relay route</h2>
               </div>
-              <span class="settings-field__hint">Choose how long VibePing waits before switching you to offline.</span>
-            </label>
-
-            <div class="settings-note">
-              Current threshold: <strong id="timeout-value">30 min</strong>
             </div>
-          </div>
-        </section>
 
-        <section class="panel panel--activity">
-          <div class="panel__header">
-            <div>
-              <p class="panel__eyebrow">Recent activity</p>
-              <h2>Recent file edits</h2>
+            <div id="webhook-editor" class="discord-editor">
+              <label class="timeout-control" for="webhook-input">
+                <span class="discord-label-row">
+                  <span>Webhook route</span>
+                  <button
+                    id="webhook-help-button"
+                    class="discord-help-button"
+                    type="button"
+                    aria-label="How to find your Discord webhook URL"
+                  >
+                    ?
+                  </button>
+                </span>
+                <input
+                  id="webhook-input"
+                  type="password"
+                  placeholder="https://discord.com/api/webhooks/..."
+                  autocomplete="off"
+                />
+              </label>
+
+              <div class="discord-actions">
+                <button id="test-webhook-button" class="button button--primary" type="button">
+                  Test relay
+                </button>
+              </div>
+
+              <div class="discord-status-card" aria-live="polite">
+                <p id="discord-status-message" class="discord-status-card__message">
+                  Discord delivery is not configured yet.
+                </p>
+                <p id="discord-status-meta" class="discord-status-card__meta">
+                  Add a webhook URL or configure a backend server to test delivery.
+                </p>
+              </div>
+
+              <div class="discord-actions">
+                <button id="official-server-button" class="button button--secondary" type="button">
+                  Join official relay
+                </button>
+              </div>
             </div>
-          </div>
+          </section>
 
-          <ul id="activity-list" class="activity-list" aria-label="Recent file edits"></ul>
-        </section>
-
-        <section class="panel panel--diagnostics">
-          <div class="panel__header">
-            <div>
-              <p class="panel__eyebrow">Diagnostics</p>
-              <h2>Watcher state</h2>
+          <section class="screen screen--activity">
+            <div class="panel__header">
+              <div>
+                <p class="panel__eyebrow">Recent transmissions</p>
+                <h2>Activity feed</h2>
+              </div>
             </div>
-          </div>
 
-          <div class="diagnostics-grid" aria-live="polite">
-            <article class="diagnostic-card">
-              <span class="diagnostic-card__label">Effective presence</span>
-              <strong id="diagnostic-presence">Offline</strong>
-            </article>
-            <article class="diagnostic-card">
-              <span class="diagnostic-card__label">Last scan</span>
-              <strong id="diagnostic-last-scan">Not scanned yet</strong>
-            </article>
-            <article class="diagnostic-card">
-              <span class="diagnostic-card__label">Watched folders</span>
-              <strong id="diagnostic-folder-count">0</strong>
-            </article>
-            <article class="diagnostic-card">
-              <span class="diagnostic-card__label">Needs review</span>
-              <strong id="diagnostic-needs-review">0</strong>
-            </article>
-          </div>
-        </section>
-      </main>
+            <ul id="activity-list" class="activity-list" aria-label="Recent file edits"></ul>
+          </section>
 
-      <footer class="footer">
+          <section class="screen screen--settings">
+            <div class="panel__header panel__header--stacked">
+              <div>
+                <p class="panel__eyebrow">Runtime controls</p>
+                <h2>Background rules</h2>
+              </div>
+            </div>
+
+            <div class="settings-stack">
+              <label class="toggle-card" for="keep-running-checkbox">
+                <span class="toggle-card__copy">
+                  <strong>Keep running after close</strong>
+                  <span>Continue broadcasting until you quit from the tray.</span>
+                </span>
+                <input id="keep-running-checkbox" type="checkbox" />
+              </label>
+
+              <label class="toggle-card" for="open-at-login-checkbox">
+                <span class="toggle-card__copy">
+                  <strong>Launch at login</strong>
+                  <span>Bring Vibe-Ping online when your computer session starts.</span>
+                </span>
+                <input id="open-at-login-checkbox" type="checkbox" />
+              </label>
+
+              <label class="toggle-card" for="start-hidden-checkbox">
+                <span class="toggle-card__copy">
+                  <strong>Start hidden</strong>
+                  <span>Stay in the background instead of opening the window.</span>
+                </span>
+                <input id="start-hidden-checkbox" type="checkbox" />
+              </label>
+
+              <label class="settings-field" for="timeout-input">
+                <span class="settings-field__label">Idle cutoff</span>
+                <div class="settings-field__control">
+                  <input
+                    id="timeout-input"
+                    type="number"
+                    min="5"
+                    max="240"
+                    step="5"
+                    value="30"
+                  />
+                  <span class="settings-field__suffix">minutes</span>
+                </div>
+                <span class="settings-field__hint">Set how long Vibe-Ping waits before switching you offline.</span>
+              </label>
+
+              <div class="settings-note">
+                Current threshold: <strong id="timeout-value">30 min</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen screen--diagnostics">
+            <div class="panel__header">
+              <div>
+                <p class="panel__eyebrow">Diagnostics</p>
+                <h2>Watcher telemetry</h2>
+              </div>
+            </div>
+
+            <div class="diagnostics-grid" aria-live="polite">
+              <article class="diagnostic-card">
+                <span class="diagnostic-card__label">Effective presence</span>
+                <strong id="diagnostic-presence">Offline</strong>
+              </article>
+              <article class="diagnostic-card">
+                <span class="diagnostic-card__label">Last scan</span>
+                <strong id="diagnostic-last-scan">Not scanned yet</strong>
+              </article>
+              <article class="diagnostic-card">
+                <span class="diagnostic-card__label">Watched folders</span>
+                <strong id="diagnostic-folder-count">0</strong>
+              </article>
+              <article class="diagnostic-card">
+                <span class="diagnostic-card__label">Needs review</span>
+                <strong id="diagnostic-needs-review">0</strong>
+              </article>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <footer class="app-footer">
         <span id="runtime-badge"></span>
       </footer>
+
+      <dialog id="webhook-help-dialog" class="discord-help-dialog" aria-labelledby="webhook-help-title">
+        <div class="discord-help-dialog__content">
+          <div class="discord-help-dialog__header">
+            <h3 id="webhook-help-title">Find your Discord webhook URL</h3>
+            <button
+              id="webhook-help-close-button"
+              class="discord-help-dialog__close"
+              type="button"
+              aria-label="Close webhook help"
+            >
+              Close
+            </button>
+          </div>
+          <ol class="discord-help-dialog__steps">
+            <li>Open Discord and enter the server and channel for Vibe-Ping updates.</li>
+            <li>Select <strong>Edit Channel</strong>, then <strong>Integrations</strong>, then <strong>Webhooks</strong>.</li>
+            <li>Create or reuse a webhook and copy its URL.</li>
+            <li>Paste it here, then use <strong>Test relay</strong> to verify delivery.</li>
+          </ol>
+        </div>
+      </dialog>
     </div>
 
     <script type="module" src="./renderer.js"></script>

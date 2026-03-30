@@ -23,6 +23,7 @@ const addFolderButton = requireElement<HTMLButtonElement>("#add-folder-button");
 const removeFolderButton = requireElement<HTMLButtonElement>("#remove-folder-button");
 const activityList = requireElement<HTMLElement>("#activity-list");
 const runtimeBadge = requireElement<HTMLElement>("#runtime-badge");
+const themeToggleButton = requireElement<HTMLButtonElement>("#theme-toggle-button");
 const usernameDisplay = requireElement<HTMLButtonElement>("#username-display");
 const usernameInput = requireElement<HTMLInputElement>("#username-input");
 const webhookInput = requireElement<HTMLInputElement>("#webhook-input");
@@ -50,6 +51,8 @@ let folders: FolderItem[] = [];
 let selectedFolderId: string | null = null;
 let officialServerAvailable = false;
 let officialServerUrl = "";
+const THEME_STORAGE_KEY = "vibe-ping-ui-theme";
+let activeTheme: "dark" | "light" = "dark";
 
 function hasDeliveryTarget(nextConfig: WatcherConfig): boolean {
   return Boolean(nextConfig.backendUrl.trim() || nextConfig.webhookUrl.trim());
@@ -69,9 +72,66 @@ function normalizeUsername(value: string): string {
   return normalized || DEFAULT_WATCHER_CONFIG.username;
 }
 
+function parseTheme(value: string | null): "dark" | "light" | null {
+  if (value === "dark" || value === "light") {
+    return value;
+  }
+
+  return null;
+}
+
+function readSavedTheme(): "dark" | "light" | null {
+  try {
+    return parseTheme(window.localStorage.getItem(THEME_STORAGE_KEY));
+  } catch {
+    return null;
+  }
+}
+
+function saveTheme(theme: "dark" | "light"): void {
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // Ignore storage write failures and keep the in-memory theme.
+  }
+}
+
+function resolvePreferredTheme(): "dark" | "light" {
+  const savedTheme = readSavedTheme();
+
+  if (savedTheme) {
+    return savedTheme;
+  }
+
+  const prefersLight = window.matchMedia?.("(prefers-color-scheme: light)").matches ?? false;
+
+  return prefersLight ? "light" : "dark";
+}
+
+function renderThemeToggle(): void {
+  const nextTheme = activeTheme === "dark" ? "light" : "dark";
+
+  themeToggleButton.textContent = `Switch to ${nextTheme} mode`;
+  themeToggleButton.setAttribute("aria-pressed", String(activeTheme === "light"));
+}
+
+function applyTheme(theme: "dark" | "light", persist = false): void {
+  activeTheme = theme;
+  document.documentElement.setAttribute("data-theme", theme);
+  renderThemeToggle();
+
+  if (persist) {
+    saveTheme(theme);
+  }
+}
+
+function toggleTheme(): void {
+  applyTheme(activeTheme === "dark" ? "light" : "dark", true);
+}
+
 function setStatus(label: string, detail: string): void {
-  document.title = label === initialStatus.label ? "VibePing" : `VibePing - ${label}`;
-  console.info("[VibePing]", label, detail);
+  document.title = label === initialStatus.label ? "Vibe-Ping" : `Vibe-Ping - ${label}`;
+  console.info("[Vibe-Ping]", label, detail);
 }
 
 function validateDiscordWebhookUrl(value: string): { valid: boolean; message: string } {
@@ -79,7 +139,7 @@ function validateDiscordWebhookUrl(value: string): { valid: boolean; message: st
     return {
       valid: true,
       message: hasDeliveryTarget(config)
-        ? "Using the shared VibePing server for delivery."
+        ? "Using the shared Vibe-Ping server for delivery."
         : "Webhook not set. Discord notifications are currently off."
     };
   }
@@ -368,7 +428,7 @@ function saveTimeoutMinutes(): void {
   const nextTimeoutMinutes = normalizeTimeoutMinutes(timeoutInput.value);
   timeoutInput.value = String(nextTimeoutMinutes);
   void persistConfig({ timeoutMinutes: nextTimeoutMinutes }).then(() => {
-    setStatus("Idle threshold updated", `VibePing will mark you offline after ${nextTimeoutMinutes} minutes.`);
+    setStatus("Idle threshold updated", `Vibe-Ping will mark you offline after ${nextTimeoutMinutes} minutes.`);
     return refreshState();
   });
 }
@@ -417,7 +477,7 @@ async function testDiscordConnection(): Promise<void> {
   }
 
   testWebhookButton.disabled = true;
-  testWebhookButton.textContent = "Testing...";
+  testWebhookButton.textContent = "Testing relay...";
 
   try {
     const result = await desktopApi.testDiscordConnection();
@@ -430,7 +490,7 @@ async function testDiscordConnection(): Promise<void> {
     const message = error instanceof Error ? error.message : "Unknown Discord connection error";
     setStatus("Discord connection failed", message);
   } finally {
-    testWebhookButton.textContent = "Test connection";
+    testWebhookButton.textContent = "Test relay";
     testWebhookButton.disabled = !hasDeliveryTarget(config);
   }
 }
@@ -467,7 +527,7 @@ async function connectToOfficialServer(): Promise<void> {
 }
 
 async function addSelectedFolders(): Promise<void> {
-  setStatus("Opening folder picker", "Choose one or more folders for VibePing to track.");
+  setStatus("Opening folder picker", "Choose one or more folders for Vibe-Ping to track.");
 
   if (!desktopApi?.selectFolders) {
     setStatus(
@@ -525,6 +585,8 @@ function removeSelectedFolder(): void {
 }
 
 async function bootstrap(): Promise<void> {
+  applyTheme(resolvePreferredTheme());
+
   if (!desktopApi?.runtime || !desktopApi?.getConfig || !desktopApi?.getState) {
     setStatus(
       "Desktop bridge unavailable",
@@ -553,6 +615,7 @@ async function bootstrap(): Promise<void> {
 addFolderButton.addEventListener("click", () => {
   void addSelectedFolders();
 });
+themeToggleButton.addEventListener("click", toggleTheme);
 removeFolderButton.addEventListener("click", removeSelectedFolder);
 webhookInput.addEventListener("change", () => {
   saveWebhook();
